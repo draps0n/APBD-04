@@ -1,6 +1,5 @@
 ﻿using System;
 using JetBrains.Annotations;
-using LegacyApp;
 using Xunit;
 
 namespace LegacyApp.Tests;
@@ -46,7 +45,7 @@ public class UserServiceTest
         // Assert
         Assert.False(addResult);
     }
-    
+
     [Fact]
     public void AddUser_Should_Return_False_When_Client_Underage_Month_After_Current()
     {
@@ -67,10 +66,9 @@ public class UserServiceTest
         var userService = new UserService();
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() =>
-        {
-            userService.AddUser("John", "Doe", "johndoe@gmail.com", DateTime.Parse("1982-03-21"), 0);
-        });
+        Assert.Throws<ArgumentException>(
+            () => userService.AddUser("John", "Doe", "johndoe@gmail.com", DateTime.Parse("1982-03-21"), 0)
+        );
     }
 
     [Fact]
@@ -85,7 +83,7 @@ public class UserServiceTest
         // Assert
         Assert.False(addResult);
     }
-    
+
     [Fact]
     public void AddUser_Should_Return_True_When_Normal_Client_And_Credit_Limit_OK()
     {
@@ -98,7 +96,7 @@ public class UserServiceTest
         // Assert
         Assert.True(addResult);
     }
-    
+
     [Fact]
     public void AddUser_Should_Return_True_When_Important_Client_And_Credit_Limit_OK()
     {
@@ -111,7 +109,7 @@ public class UserServiceTest
         // Assert
         Assert.True(addResult);
     }
-    
+
     [Fact]
     public void AddUser_Should_Return_True_When_Client_Is_Very_Important()
     {
