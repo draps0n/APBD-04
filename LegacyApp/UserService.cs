@@ -6,17 +6,21 @@ namespace LegacyApp
     {
         private IClientRepository _clientRepository;
         private IUserCreditService _userCreditService;
+        private IUserDataAccess _userDataAccess;
 
+        [Obsolete]
         public UserService()
         {
             _clientRepository = new ClientRepository();
             _userCreditService = new UserCreditService();
+            _userDataAccess = new AdapterUserDataAccess();
         }
 
-        public UserService(IClientRepository clientRepository, IUserCreditService userCreditService)
+        public UserService(IClientRepository clientRepository, IUserCreditService userCreditService, IUserDataAccess userDataAccess)
         {
             _clientRepository = clientRepository;
             _userCreditService = userCreditService;
+            _userDataAccess = userDataAccess;
         }
 
         public bool AddUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
@@ -56,7 +60,7 @@ namespace LegacyApp
                 return false;
             }
 
-            UserDataAccess.AddUser(user);
+            _userDataAccess.AddUser(user);
             return true;
         }
 
