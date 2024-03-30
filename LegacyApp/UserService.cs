@@ -4,6 +4,21 @@ namespace LegacyApp
 {
     public class UserService
     {
+        private IClientRepository _clientRepository;
+        private IUserCreditService _userCreditService;
+
+        public UserService()
+        {
+            _clientRepository = new ClientRepository();
+            _userCreditService = new UserCreditService();
+        }
+
+        public UserService(IClientRepository clientRepository, IUserCreditService userCreditService)
+        {
+            _clientRepository = clientRepository;
+            _userCreditService = userCreditService;
+        }
+
         public bool AddUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
         {
             if (!IsFirstNameValid(firstName) || !IsLastNameValid(lastName))
@@ -23,8 +38,7 @@ namespace LegacyApp
                 return false;
             }
 
-            var clientRepository = new ClientRepository();
-            var client = clientRepository.GetById(clientId);
+            var client = _clientRepository.GetById(clientId);
 
             var user = new User
             {
@@ -51,7 +65,7 @@ namespace LegacyApp
             return user.HasCreditLimit && user.CreditLimit < 500;
         }
 
-        private static void CalculateCreditLimitForUser(Client client, User user)
+        private void CalculateCreditLimitForUser(Client client, User user)
         {
             switch (client.Type)
             {
@@ -60,24 +74,16 @@ namespace LegacyApp
                     break;
                 case "ImportantClient":
                 {
-                    using (var userCreditService = new UserCreditService())
-                    {
-                        var creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
-                        creditLimit *= 2;
-                        user.CreditLimit = creditLimit;
-                    }
-
+                    var creditLimit = _userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
+                    creditLimit *= 2;
+                    user.CreditLimit = creditLimit;
                     break;
                 }
                 default:
                 {
                     user.HasCreditLimit = true;
-                    using (var userCreditService = new UserCreditService())
-                    {
-                        var creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
-                        user.CreditLimit = creditLimit;
-                    }
-
+                    var creditLimit = _userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
+                    user.CreditLimit = creditLimit;
                     break;
                 }
             }
